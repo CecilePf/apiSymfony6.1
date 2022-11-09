@@ -2,11 +2,11 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -17,7 +17,8 @@ class BaseController extends AbstractController
         protected SerializerInterface $serializer,
         protected HttpClientInterface $client,
         protected TokenStorageInterface $tokenStorageInterface,
-        protected JWTTokenManagerInterface $jwtManager
+        protected JWTTokenManagerInterface $jwtManager,
+        protected Security $security
     )
     {
         $this->em = $em;
@@ -25,6 +26,7 @@ class BaseController extends AbstractController
         $this->client = $client;
         $this->jwtManager = $jwtManager;
         $this->tokenStorageInterface = $tokenStorageInterface;
+        $this->security = $security;
     }
 
     /**
@@ -48,22 +50,5 @@ class BaseController extends AbstractController
         $response = $this->client->request($method, $url);
 
         return $response;
-    }
-
-    /**
-     * Get user from decoded token
-     * @return User $user
-     */
-    public function getCurrentUser()
-    {
-        $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
-        $email = $decodedJwtToken['username'];
-        /** @var UserRepository $userRepository */
-        $userRepository = $this->em->getRepository(User::class);
-        $user = $userRepository->findOneBy([
-            'email' => $email
-        ]);
-
-        return $user;
     }
 }

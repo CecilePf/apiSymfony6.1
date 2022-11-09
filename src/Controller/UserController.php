@@ -12,13 +12,21 @@ class UserController extends BaseController
     #[Route('/users', name: 'app_users')]
     public function index(): JsonResponse
     {
-        /** @var UserRepository $userRepository */
-        $userRepository = $this->em->getRepository(User::class);
-        $users = $userRepository->findAll();
-        $this->getJson($users);
+        if ($this->security->isGranted(User::ADMIN)) {
+            /** @var UserRepository $userRepository */
+            $userRepository = $this->em->getRepository(User::class);
+            $users = $userRepository->findBy([
+                'active' => true
+            ]);
+            $this->getJson($users);
+
+            return $this->json([
+                'users' => $users
+            ]);
+        }
 
         return $this->json([
-            'users' => $users
+            'status' => JsonResponse::HTTP_UNAUTHORIZED
         ]);
     }
 

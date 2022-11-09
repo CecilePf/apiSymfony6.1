@@ -24,11 +24,13 @@ class UserFixtures extends Fixture
             $user,
             $plaintextPassword
         );
-        $user->setPassword($hashedPassword);
+        $user->setPassword($hashedPassword)
+            ->setActive(true);
 
         $admin = new User();
         $admin->setEmail('admin@test.fr')
-            ->setRoles(['ROLE_ADMIN']);
+            ->setRoles(['ROLE_ADMIN'])
+            ->setActive(true);
 
         $plaintextPassword = 'test1234';
         $hashedPassword = $this->passwordHasher->hashPassword(

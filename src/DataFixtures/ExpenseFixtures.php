@@ -24,6 +24,7 @@ class ExpenseFixtures extends Fixture implements DependentFixtureInterface
             $expense->setCost($faker->randomFloat(2, 0, 1000))
                 ->setLabel($faker->sentence(6, true))
                 ->setUser($user)
+                ->setActive(true)
             ;
 
             $manager->persist($expense);
